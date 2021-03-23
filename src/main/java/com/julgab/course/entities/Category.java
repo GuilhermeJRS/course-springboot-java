@@ -8,9 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_category")
@@ -26,8 +27,8 @@ public class Category implements Serializable{
 	 * Foi usado um Set, em vez de List, para evitar repetições de produtos.
 	 * Foi instanciado com HashSet, em vez de Set, porque Set é uma interface, não pode ser instanciada, HashSet é uma classe. 
 	 */
-	@OneToMany
-	@Transient
+	@JsonIgnore
+	@ManyToMany(mappedBy = "categories")
 	private Set<Product> products = new HashSet<>();
 
 	public Category() {
