@@ -11,7 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_product")
@@ -28,15 +31,18 @@ public class Product implements Serializable {
 	private String imgUrl;
 
 	/*
-	 * Foi usado um Set, em vez de List, para evitar repetições de categorias. Foi
-	 * instanciado com HashSet, em vez de Set, porque Set é uma interface, não pode
-	 * ser instanciada, HashSet é uma classe.
+	 * Foi usado um Set, em vez de List, para evitar repetições de categorias. 
+	 * Foi instanciado com HashSet, em vez de Set, porque Set é uma interface, não pode
+	 * ser instanciada, HashSet é uma classe que implementa um Set.
 	 */
 	@ManyToMany
 //	@JoinTable(name = "tb_product_category", joinColumns = @JoinColumn(referencedColumnName = "product_id"))
 	@JoinTable(name = "tb_product_category", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
 	private Set<Category> categories = new HashSet<>();
-
+	
+	@OneToMany(mappedBy = "id.product")
+	private Set<OrderItem> items = new HashSet<>();
+	
 	public Product() {
 	}
 
@@ -91,6 +97,20 @@ public class Product implements Serializable {
 
 	public Set<Category> getCategories() {
 		return categories;
+	}
+
+//	public Set<OrderItem> getItems() {
+//		return items;
+//	}
+
+	@JsonIgnore
+	public Set<Order> getOrders() {
+		Set<Order> orders = new HashSet<>();
+		
+		for (OrderItem orderItem: items) {
+			orders.add(orderItem.getOrder());
+		}
+		return orders;
 	}
 
 	@Override
